@@ -1,22 +1,12 @@
 import ast
 import astor
+import re
 
 def save_name(name, new_name, name_map, name_list):
     name_map[name] = new_name
     name_list.append({name: new_name})
 
 def anonymize_function(code):
-    """
-    Anonymizes function names, argument names, variable names, class names,
-    method names, and attributes in the provided code.
-    
-    Args:
-    - code (str): The source code to anonymize.
-    
-    Returns:
-    - str: The anonymized source code.
-    - list: The list of mappings of original names to anonymized names.
-    """
     tree = ast.parse(code)
     name_map = {}
     name_list = []
@@ -94,33 +84,28 @@ def anonymize_attribute(node, name_map, name_list, counter):
     return node
 
 def rebuild(anonymized_code, name_list):
-    """
-    Rebuilds the original code by replacing anonymized names with the original names.
-    
-    Args:
-    - anonymized_code (str): The anonymized source code.
-    - name_list (list): The list of mappings of original names to anonymized names.
-    
-    Returns:
-    - str: The rebuilt source code with original names.
-    """
     for mapping in reversed(name_list):
         for original_name, anonymized_name in mapping.items():
             anonymized_code = anonymized_code.replace(anonymized_name, original_name)
     return anonymized_code
 
+def anonymize_prompt(prompt, name_list):
+    for mapping in name_list:
+        for original_name, anonymized_name in mapping.items():
+            prompt = re.sub(rf'\b{original_name}\b', anonymized_name, prompt)
+    return prompt
+
 # Example usage
 code1 = """
-def anonymize_attribute(node, name_map, name_list, counter):
-    if node.attr not in name_map:
-        new_name = f"attr{counter[0]}"
-        save_name(node.attr, new_name, name_map, name_list)
-        counter[0] += 1
-    node.attr = name_map[node.attr]
-    return node
+def multiply_checks(x, y):
+    total = x * y
+    return total
 """
 
+prompt = "Can you explain how multiply_checks function works and how variables x and y are used?"
+
 anonymized_code1, name_list1 = anonymize_function(code1)
+anonymized_prompt = anonymize_prompt(prompt, name_list1)
 
 print("Original Code 1:")
 print(code1)
@@ -129,20 +114,33 @@ print(anonymized_code1)
 print("Name Map 1:")
 print(name_list1)
 print("\n")
+print("Original Prompt:")
+print(prompt)
+print("\n")
+print("Anonymized Prompt:")
+print(anonymized_prompt)
+print("\n")
+
+
+rebuilt_prompt = rebuild(anonymized_prompt, name_list1)
+print("Rebuilt prompt 1:")
+print(rebuilt_prompt)
+print("\n")
+
 
 # Rebuild the original code
 rebuilt_code1 = rebuild(anonymized_code1, name_list1)
-
 print("Rebuilt Code 1:")
 print(rebuilt_code1)
 
 
 
 
+
 code2 = """
-def multiply(x, y):
-    result = x * y
-    return result
+def multiply_checks(x, y):
+    total = x * y
+    return total
 """
 
 code3 = """
