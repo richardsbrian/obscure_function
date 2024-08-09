@@ -1,6 +1,8 @@
 import ast
 import astor
 import re
+import builtins
+from anthropic_api_call import send_prompt
 
 def save_name(name, new_name, name_map, name_list):
     name_map[name] = new_name
@@ -68,6 +70,8 @@ def anonymize_class_def(node, name_map, name_list, counter):
     return node
 
 def anonymize_name(node, name_map, name_list, counter):
+    if node.id in dir(builtins):
+        return node  # Skip anonymizing built-in functions like `print`
     if node.id not in name_map:
         new_name = f"var{counter[0]}"
         save_name(node.id, new_name, name_map, name_list)
@@ -75,13 +79,18 @@ def anonymize_name(node, name_map, name_list, counter):
     node.id = name_map[node.id]
     return node
 
+
 def anonymize_attribute(node, name_map, name_list, counter):
-    if node.attr not in name_map:
-        new_name = f"attr{counter[0]}"
-        save_name(node.attr, new_name, name_map, name_list)
-        counter[0] += 1
-    node.attr = name_map[node.attr]
-    return node
+    return node  # Skip anonymizing any attributes
+
+
+# def anonymize_attribute(node, name_map, name_list, counter):
+#     if node.attr not in name_map:
+#         new_name = f"attr{counter[0]}"
+#         save_name(node.attr, new_name, name_map, name_list)
+#         counter[0] += 1
+#     node.attr = name_map[node.attr]
+#     return node
 
 def rebuild(anonymized_code, name_list):
     for mapping in reversed(name_list):
@@ -95,96 +104,62 @@ def anonymize_prompt(prompt, name_list):
             prompt = re.sub(rf'\b{original_name}\b', anonymized_name, prompt)
     return prompt
 
-# Example usage
-def main():
+def merge_code_and_prompt(code, prompt):
+    return f"{code}\n\n{prompt}"
 
+def test_1():
     code = """
-    def multiply_checks(x, y):
-        total = x * y
-        return total
+import datetime
+
+def get_current_time():
+    current_time = datetime.datetime.now().strftime("%I:%M %p")
+    return f"The current time is {current_time}"
+
+# Example usage
+print(get_current_time())
     """
 
-    prompt = "Can you explain how multiply_checks function works and how variables x and y are used?"
+    anonymized_code, name_list1 = anonymize_function(code)
+
+    print("Anonymized code:")
+    print(anonymized_code)
+    
+
+
+# Example usage
+def main():
+    code = """
+import datetime
+
+def get_current_time():
+    current_time = datetime.datetime.now().time()
+    return current_time.strftime("%H:%M:%S")
+
+# Example usage
+print(get_current_time())
+    """
+
+    prompt = "Can you explain how the function save_name works?"
 
     anonymized_code, name_list1 = anonymize_function(code)
     anonymized_prompt = anonymize_prompt(prompt, name_list1)
+    anonymize_merged_code_and_prompt = merge_code_and_prompt(anonymized_code, anonymized_prompt)
 
-    print("Original Code 1:")
-    print(code)
-    print("Anonymized Code 1:")
-    print(anonymized_code)
-    print("Name Map 1:")
-    print(name_list1)
-    print("\n")
-    print("Original Prompt:")
-    print(prompt)
-    print("\n")
-    print("Anonymized Prompt:")
-    print(anonymized_prompt)
+
+    print("Anonymized code and Prompt:")
+    print(anonymize_merged_code_and_prompt)
     print("\n")
 
+    response = send_prompt(anonymize_merged_code_and_prompt)
 
-    rebuilt_prompt = rebuild(anonymized_prompt, name_list1)
-    print("Rebuilt prompt 1:")
-    print(rebuilt_prompt)
-    print("\n")
+    # Extracting the text content from the response object
+    response_text = response.content[0].text
+    print("Response:")
+    print(response_text)
 
-
-    # Rebuild the original code
-    rebuilt_code1 = rebuild(anonymized_code, name_list1)
-    print("Rebuilt Code 1:")
-    print(rebuilt_code1)
-
-
-
-
-
-    code2 = """
-    def multiply_checks(x, y):
-        total = x * y
-        return total
-    """
-
-    code3 = """
-    def complex_function(a, b, c):
-        temp = a + b
-        temp2 = temp * c
-        if temp2 > 10:
-            return temp2
-        else:
-            return 0
-    """
-
-    code4 = """
-    class Example:
-        def __init__(self, value):
-            self.value = value
-        
-        def get_value(self):
-            return self.value
-    """
-
-    #anonymized_code2, name_map2 = anonymize_function(code2)
-    #anonymized_code3, name_map3 = anonymize_function(code3)
-    #anonymized_code4, name_map4 = anonymize_function(code4)
-
-
-
-    # print("Anonymized Code 2:")
-    # print(anonymized_code2)
-    # print("Name Map 2:")
-    # print(name_map2)
-
-    # print("Anonymized Code 3:")
-    # print(anonymized_code3)
-    # print("Name Map 3:")
-    # print(name_map3)
-
-    # print("Anonymized Code 4:")
-    # print(anonymized_code4)
-    # print("Name Map 4:")
-    # print(name_map4)
-
+    rebuilt_response = rebuild(response_text, name_list1)
+    print("Rebuilt response:")
+    print(rebuilt_response)
 
 if __name__ == "__main__":
-    main()
+    test_1()
