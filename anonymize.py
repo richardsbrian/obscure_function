@@ -107,22 +107,22 @@ def anonymize_prompt(prompt, name_list):
 def merge_code_and_prompt(code, prompt):
     return f"{code}\n\n{prompt}"
 
-def test_1():
-    code = """
-import datetime
+# def test_1():
+#     code = """
+# import datetime
 
-def get_current_time():
-    current_time = datetime.datetime.now().strftime("%I:%M %p")
-    return f"The current time is {current_time}"
+# def get_current_time():
+#     current_time = datetime.datetime.now().strftime("%I:%M %p")
+#     return f"The current time is {current_time}"
 
-# Example usage
-print(get_current_time())
-    """
+# # Example usage
+# print(get_current_time())
+#     """
 
-    anonymized_code, name_list1 = anonymize_function(code)
+#     anonymized_code, name_list1 = anonymize_function(code)
 
-    print("Anonymized code:")
-    print(anonymized_code)
+#     print("Anonymized code:")
+#     print(anonymized_code)
     
 
 
@@ -162,4 +162,4 @@ print(get_current_time())
     print(rebuilt_response)
 
 if __name__ == "__main__":
-    test_1()
+    main()

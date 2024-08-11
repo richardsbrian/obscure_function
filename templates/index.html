@@ -127,13 +127,50 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .bottom-tab {
+            display: flex;
+            justify-content: space-around;
+            background-color: #2d2e3b;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: auto;
+        }
+        .bottom-tab button {
+            flex-grow: 1;
+            background-color: #2d2e3b;
+            color: #d1d5db;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px;
+            transition: 0.3s;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .bottom-tab button:hover {
+            background-color: #40414f;
+        }
+        .bottom-tab button.active {
+            background-color: #40414f;
+        }
+        .bottom-tabcontent {
+            display: none;
+            padding: 20px;
+            background-color: #343541;
+            color: #e4e4eb;
+            margin-top: 20px;
+            border-radius: 5px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Anonymized')">Anonymized</button>
-            <button class="tablinks" onclick="openTab(event, 'Response')">Response</button>
+            <button class="tablinks" onclick="openTab(event, 'Anonymized')">Anonymized Prompt</button>
+            <button class="tablinks" onclick="openTab(event, 'Response')">Anonymized Response</button>
             <button class="tablinks" onclick="openTab(event, 'RebuiltResponse')">Rebuilt Response</button>
         </div>
 
@@ -141,12 +178,12 @@
 
         <div id="Anonymized" class="tabcontent">
             <h3>Anonymized</h3>
-            <pre id="anonymizedResult">Anonymized content will appear here...</pre>
+            <pre id="anonymizedResult">Your Anonymized Prompt will appear here...</pre>
         </div>
 
         <div id="Response" class="tabcontent">
             <h3>Response</h3>
-            <pre id="responseResult">Response content will appear here...</pre>
+            <pre id="responseResult">Anonymized Response content will appear here...</pre>
         </div>
 
         <div id="RebuiltResponse" class="tabcontent">
@@ -154,15 +191,22 @@
             <pre id="rebuiltResult">Rebuilt response will appear here...</pre>
         </div>
 
-        <div class="inputs">
-            <label for="code">Code:</label>
-            <textarea id="code" placeholder="Paste your code here..."></textarea>
+        <div class="bottom-tab">
+            <button class="bottom-tablinks" onclick="openBottomTab(event, 'PromptInput')">Prompt</button>
+            <button class="bottom-tablinks" onclick="openBottomTab(event, 'CodeInput')">Code</button>
+        </div>
 
+        <div id="PromptInput" class="bottom-tabcontent">
             <label for="prompt">Prompt:</label>
             <textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
-
-            <button id="anonymizeBtn">Anonymize and Send</button>
         </div>
+
+        <div id="CodeInput" class="bottom-tabcontent">
+            <label for="code">Code:</label>
+            <textarea id="code" placeholder="Paste your code here..."></textarea>
+        </div>
+
+        <button id="anonymizeBtn">Anonymize and Send</button>
     </div>
 
     <script>
@@ -186,6 +230,26 @@
             evt.currentTarget.className += " active";
         }
 
+        function openBottomTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+
+            // Hide all bottom tab contents
+            tabcontent = document.getElementsByClassName("bottom-tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Remove the active class from all bottom tabs
+            tablinks = document.getElementsByClassName("bottom-tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current bottom tab and add an active class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
         function startSpinner() {
             document.querySelector('.spinner').style.display = 'block';
         }
@@ -194,7 +258,11 @@
             document.querySelector('.spinner').style.display = 'none';
         }
 
+        // Open the RebuiltResponse tab by default on top
         document.getElementsByClassName('tablinks')[2].click();
+
+        // Open the PromptInput tab by default on bottom
+        document.getElementsByClassName('bottom-tablinks')[0].click();
 
         document.getElementById('anonymizeBtn').addEventListener('click', function () {
             const code = document.getElementById('code').value;
