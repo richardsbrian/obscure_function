@@ -1,0 +1,39 @@
+----TODO----
+
+
+-LLM model selection
+-anthropic
+-open ai
+-local models
+	-Lamma	
+	-Gronk
+	-mistral
+
+
+-contiued chat convorsation
+	-on the second prompt send the last prompt, response, and the new prompt
+	-make a summary prompt to keep context windows small
+		- run summary prompt while the user is reading or typing a new response in the background
+
+
+
+-chat log
+- make a chat GPT-style log on the side of the screen 
+	- make a folder system to organize the chats better
+
+-other programming languages
+C++
+Rust
+Js
+Html
+CSS
+
+
+-revise prompt option
+
+-scrolling text
+Make text scroll like ChatGPT
+
+-UI sizing bugs
+-when response is given the window expands to much
+
