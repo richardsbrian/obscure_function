@@ -1,4 +1,3 @@
-```
 # ANONYMIZE
 
 ## Setup Instructions
@@ -28,4 +27,4 @@
 - Make sure you have all the required dependencies installed before running the application.
 - Keep your API key confidential and do not share it publicly.
 
-```
+
