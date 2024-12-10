@@ -71,7 +71,7 @@ def anonymize_class_def(node, name_map, name_list, counter):
 
 def anonymize_name(node, name_map, name_list, counter):
     if node.id in dir(builtins):
-        return node  # Skip anonymizing built-in functions like `print`
+        return node  
     if node.id not in name_map:
         new_name = f"var{counter[0]}"
         save_name(node.id, new_name, name_map, name_list)
@@ -81,7 +81,7 @@ def anonymize_name(node, name_map, name_list, counter):
 
 
 def anonymize_attribute(node, name_map, name_list, counter):
-    return node  # Skip anonymizing any attributes
+    return node  
 
 
 # def anonymize_attribute(node, name_map, name_list, counter):
