@@ -8,3 +8,6 @@ def get_api_key():
         return ANTHROPIC_API_KEY
     else:
         print(f"{specific_variable} not found in the .env file")
+
+
+
