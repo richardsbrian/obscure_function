@@ -1,5 +1,6 @@
 # Python Code & Prompt Anonymizer
 
+![Anonymize_logo](https://github.com/user-attachments/assets/76e22121-45c8-454e-8e8b-02d63f66a5b6)
 
 This is a Flask-based application designed exclusively for anonymizing Python code and associated prompts. The app sends anonymized content to an external API, receives processed responses, and reconstructs the original identifiers from the API output. It includes a responsive web interface for user interaction.
 
@@ -56,6 +57,8 @@ This is a Flask-based application designed exclusively for anonymizing Python co
 
 ## Usage
 
+![ano_full_app](https://github.com/user-attachments/assets/8a2a7f17-e5d1-4ad1-bfce-69b00c24f5af)
+
 ### Web Interface
 
 1. **Input Python Code and Prompt**: Enter Python code and/or a prompt in the provided fields.
@@ -105,6 +108,7 @@ This is a Flask-based application designed exclusively for anonymizing Python co
    ```
 
 3. **Anonymized Output**:
+   Code:
    ```python
    def function0(var0):
        return f"Hello, {var0}!"
